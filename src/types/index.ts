@@ -1,4 +1,4 @@
-export type ProductCategory = 'educativo' | 'datas_especiais' | 'papelaria'
+export type ProductCategory = string
 export type OrderStatus = 'pending' | 'paid' | 'failed'
 
 export interface Product {
