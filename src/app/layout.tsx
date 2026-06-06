@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Nunito, Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
+import { PwaInstallPopup } from '@/components/layout/PwaInstallPopup'
+import { ServiceWorkerRegistrar } from '@/components/layout/ServiceWorkerRegistrar'
 import './globals.css'
 
 const nunito = Nunito({
@@ -53,8 +55,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${nunito.variable} ${inter.variable}`}>
       <body>
+        <ServiceWorkerRegistrar />
         {children}
         <Toaster richColors position="top-right" />
+        <PwaInstallPopup />
       </body>
     </html>
   )
