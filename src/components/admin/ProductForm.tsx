@@ -17,30 +17,29 @@ function unique(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)))
 }
 
+function joinValues(values: string[]): string | null {
+  return values.length > 0 ? values.join(', ') : null
+}
+
 export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [categoryOptions, setCategoryOptions] = useState<string[]>([])
   const [themeOptions, setThemeOptions] = useState<string[]>([])
+  const [categoryInput, setCategoryInput] = useState(product?.category ?? '')
   const [themeInput, setThemeInput] = useState('')
   const [themeTags, setThemeTags] = useState<string[]>(
     product?.theme ? product.theme.split(',').map((tag) => tag.trim()).filter(Boolean) : []
   )
   const [form, setForm] = useState({
     name: product?.name ?? '',
-    slug: product?.slug ?? '',
     description: product?.description ?? '',
     price: product?.price?.toString() ?? '',
-    category: product?.category ?? '',
     age_range: product?.age_range ?? '',
     is_active: product?.is_active ?? true,
   })
-  const [coverFile, setCoverFile] = useState<File | null>(null)
-  const [pdfFile, setPdfFile] = useState<File | null>(null)
-
-  useEffect(() => {
-    if (!product) setForm((f) => ({ ...f, slug: slugify(f.name) }))
-  }, [form.name, product])
+  const [coverFiles, setCoverFiles] = useState<File[]>([])
+  const [pdfFiles, setPdfFiles] = useState<File[]>([])
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -82,30 +81,45 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
     return path
   }
 
+  const uploadFiles = async (files: File[], bucket: string, slug: string) => {
+    return Promise.all(
+      files.map(async (file, index) => {
+        const ext = file.name.split('.').pop() ?? 'bin'
+        const path = `${slug}-${Date.now()}-${index}.${ext}`
+        return uploadFile(file, bucket, path)
+      })
+    )
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     try {
-      let cover_image_url = product?.cover_image_url
-      let pdf_storage_path = product?.pdf_storage_path
+      const slug = slugify(form.name)
+      const existingCoverUrls = product?.cover_image_url ? product.cover_image_url.split(',').map((item) => item.trim()).filter(Boolean) : []
+      const existingPdfPaths = product?.pdf_storage_path ? product.pdf_storage_path.split(',').map((item) => item.trim()).filter(Boolean) : []
 
-      if (coverFile) {
-        const ext = coverFile.name.split('.').pop()
-        cover_image_url = await uploadFile(coverFile, 'product-covers', `${form.slug}.${ext}`)
+      let cover_image_url = joinValues(existingCoverUrls)
+      let pdf_storage_path = joinValues(existingPdfPaths)
+
+      if (coverFiles.length > 0) {
+        const uploadedCoverUrls = await uploadFiles(coverFiles, 'product-covers', slug)
+        cover_image_url = joinValues([...existingCoverUrls, ...uploadedCoverUrls])
       }
-      if (pdfFile) {
-        const ext = pdfFile.name.split('.').pop()
-        pdf_storage_path = await uploadFile(pdfFile, 'product-pdfs', `${form.slug}.${ext}`)
+
+      if (pdfFiles.length > 0) {
+        const uploadedPdfPaths = await uploadFiles(pdfFiles, 'product-pdfs', slug)
+        pdf_storage_path = joinValues([...existingPdfPaths, ...uploadedPdfPaths])
       }
 
       const payload = {
         name: form.name,
-        slug: form.slug,
+        slug,
         description: form.description || null,
         price: parseFloat(form.price),
-        category: form.category.trim() || null,
+        category: categoryInput.trim() || null,
         age_range: form.age_range || null,
-        theme: themeTags.length > 0 ? themeTags.join(', ') : null,
+        theme: joinValues(themeTags),
         cover_image_url,
         pdf_storage_path,
         is_active: form.is_active,
@@ -124,6 +138,9 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
       setSaving(false)
     }
   }
+
+  const existingCoverFiles = product?.cover_image_url ? product.cover_image_url.split(',').map((url) => url.trim()).filter(Boolean) : []
+  const existingPdfFiles = product?.pdf_storage_path ? product.pdf_storage_path.split(',').map((path) => path.trim()).filter(Boolean) : []
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
@@ -145,16 +162,9 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
               required
               className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
             />
+            <p className="text-xs text-gray-500 mt-2">O slug será gerado automaticamente a partir do nome.</p>
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-600">Slug (URL)</label>
-            <input
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              required
-              className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-green"
-            />
-          </div>
+
           <div>
             <label className="text-sm font-medium text-gray-600">Descrição</label>
             <textarea
@@ -164,6 +174,7 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
               className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-green"
             />
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-gray-600">Preço (R$)</label>
@@ -181,9 +192,9 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
               <label className="text-sm font-medium text-gray-600">Categoria</label>
               <input
                 list="category-options"
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="Digite ou selecione"
+                value={categoryInput}
+                onChange={(e) => setCategoryInput(e.target.value)}
+                placeholder="Pesquisar ou adicionar"
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               />
               <datalist id="category-options">
@@ -191,11 +202,13 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
                   <option key={category} value={category} />
                 ))}
               </datalist>
+              <p className="text-xs text-gray-500 mt-1">Digite ou selecione uma categoria. Se não existir, ela será criada automaticamente.</p>
             </div>
           </div>
+
           <div>
             <label className="text-sm font-medium text-gray-600">Subcategorias</label>
-            <p className="text-xs text-gray-500">Separe por vírgula para vincular múltiplas subcategorias.</p>
+            <p className="text-xs text-gray-500">Digite ou selecione uma subcategoria. Separe por vírgula para adicionar várias.</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {themeTags.map((tag) => (
                 <span key={tag} className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
@@ -217,7 +230,7 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
                     addThemeTag()
                   }
                 }}
-                placeholder="Ex: Dia dos Pais, Matemática"
+                placeholder="Pesquisar ou adicionar subcategoria"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               />
               <button
@@ -234,6 +247,7 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
               ))}
             </datalist>
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-gray-600">Faixa etária</label>
@@ -254,26 +268,51 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
               />
             </div>
           </div>
+
           <div>
-            <label className="text-sm font-medium text-gray-600">Imagem de capa</label>
+            <label className="text-sm font-medium text-gray-600">Imagens de capa</label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setCoverFile(e.target.files?.[0] ?? null)}
+              multiple
+              onChange={(e) => setCoverFiles(Array.from(e.target.files ?? []))}
               className="mt-1 w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-green/20 file:text-gray-700 file:text-sm cursor-pointer"
             />
-            {product?.cover_image_url && <p className="text-xs text-gray-400 mt-1">Capa atual: {product.cover_image_url.split('/').pop()}</p>}
+            {coverFiles.length > 0 && (
+              <p className="text-xs text-gray-500 mt-2">Selecionados: {coverFiles.map((file) => file.name).join(', ')}</p>
+            )}
+            {existingCoverFiles.length > 0 && (
+              <div className="mt-2 text-xs text-gray-500 space-y-1">
+                <p className="font-medium text-gray-700">Capa(s) atual(is):</p>
+                {existingCoverFiles.map((url) => (
+                  <p key={url} className="truncate">{url}</p>
+                ))}
+              </div>
+            )}
           </div>
+
           <div>
-            <label className="text-sm font-medium text-gray-600">Arquivo PDF</label>
+            <label className="text-sm font-medium text-gray-600">Arquivos PDF</label>
             <input
               type="file"
               accept=".pdf"
-              onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
+              multiple
+              onChange={(e) => setPdfFiles(Array.from(e.target.files ?? []))}
               className="mt-1 w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-gray-700 file:text-sm cursor-pointer"
             />
-            {product?.pdf_storage_path && <p className="text-xs text-gray-400 mt-1">PDF atual: {product.pdf_storage_path.split('/').pop()}</p>}
+            {pdfFiles.length > 0 && (
+              <p className="text-xs text-gray-500 mt-2">Selecionados: {pdfFiles.map((file) => file.name).join(', ')}</p>
+            )}
+            {existingPdfFiles.length > 0 && (
+              <div className="mt-2 text-xs text-gray-500 space-y-1">
+                <p className="font-medium text-gray-700">PDF(s) atual(is):</p>
+                {existingPdfFiles.map((path) => (
+                  <p key={path} className="truncate">{path}</p>
+                ))}
+              </div>
+            )}
           </div>
+
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
