@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingBag, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Store } from 'lucide-react'
 
 const navItems = [
   { href: '/admin',          icon: LayoutDashboard, label: 'Dashboard' },
@@ -22,6 +22,13 @@ export function AdminNav() {
         <div className="p-5 border-b border-gray-100">
           <span className="font-display font-bold text-gray-800 text-sm">Cartas & Capítulos</span>
           <p className="text-xs text-gray-400 mt-0.5">Painel Admin</p>
+          <a
+            href="/"
+            className="mt-3 flex items-center gap-1.5 text-xs text-brand-green-dark hover:underline"
+          >
+            <Store size={12} />
+            Ver loja
+          </a>
         </div>
         <nav className="flex-1 p-3 space-y-0.5">
           {navItems.map(({ href, icon: Icon, label }) => (
@@ -66,6 +73,13 @@ export function AdminNav() {
             {label}
           </a>
         ))}
+        <a
+          href="/"
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-xs text-gray-400"
+        >
+          <Store size={20} strokeWidth={1.8} />
+          Loja
+        </a>
         <a
           href="/api/auth/signout"
           className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-xs text-gray-400"
