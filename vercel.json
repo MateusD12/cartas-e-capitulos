@@ -1,0 +1,10 @@
+{
+  "headers": [
+    {
+      "source": "/api/webhook",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ]
+}
