@@ -1,21 +1,58 @@
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          {/* Marca */}
+          <div className="col-span-2 md:col-span-1">
             <span className="font-display font-bold text-gray-800">
               Cartas <span className="text-brand-green-dark">&</span> Capítulos
             </span>
-            <p className="text-xs text-gray-400 mt-1">Imprimíveis que encantam</p>
+            <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+              Imprimíveis digitais que encantam — jogos educativos, datas especiais e papelaria.
+            </p>
           </div>
-          <div className="flex items-center gap-6 text-sm text-gray-500">
-            <a href="/?categoria=educativo" className="hover:text-gray-800 transition-colors">Educativo</a>
-            <a href="/?categoria=datas_especiais" className="hover:text-gray-800 transition-colors">Datas Especiais</a>
-            <a href="/?categoria=papelaria" className="hover:text-gray-800 transition-colors">Papelaria</a>
+
+          {/* Categorias */}
+          <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Categorias</h4>
+            <ul className="space-y-2">
+              <li><a href="/?categoria=educativo"       className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Educativo</a></li>
+              <li><a href="/?categoria=datas_especiais" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Datas Especiais</a></li>
+              <li><a href="/?categoria=papelaria"       className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Papelaria</a></li>
+            </ul>
           </div>
+
+          {/* Conta */}
+          <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Minha Conta</h4>
+            <ul className="space-y-2">
+              <li><a href="/login"           className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Entrar</a></li>
+              <li><a href="/cadastro"        className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Criar conta</a></li>
+              <li><a href="/cliente/pedidos" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Meus pedidos</a></li>
+            </ul>
+          </div>
+
+          {/* Ajuda */}
+          <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Ajuda</h4>
+            <ul className="space-y-2">
+              <li><a href="/politica" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">Política de reembolso</a></li>
+              <li>
+                <a href="mailto:contato@cartasecapitulos.com.br" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">
+                  contato@cartasecapitulos.com.br
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-400">
             © {new Date().getFullYear()} Cartas & Capítulos. Todos os direitos reservados.
+          </p>
+          <p className="text-xs text-gray-300">
+            Pagamentos processados pelo Mercado Pago
           </p>
         </div>
       </div>

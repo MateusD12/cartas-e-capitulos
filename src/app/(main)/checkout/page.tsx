@@ -1,52 +1,54 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { Loader2, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Loader2, ShieldCheck, CheckCircle2, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { QRCodeDisplay } from '@/components/checkout/QRCodeDisplay'
 import { formatCurrency, validateCPF, maskCPF } from '@/lib/utils'
-import type { Product, CheckoutResponse } from '@/types'
+import type { Product } from '@/types'
+
+interface CheckoutResponse {
+  orderId: string
+  downloadToken: string
+  qrCode: string
+  qrCodeBase64: string
+  expiresAt: string
+}
 
 type Step = 'form' | 'pix' | 'success'
 
 function CheckoutContent() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const slug = searchParams.get('produto')
   const supabase = createClient()
 
-  const [product, setProduct] = useState<Product | null>(null)
-  const [loadingProduct, setLoadingProduct] = useState(true)
-  const [step, setStep] = useState<Step>('form')
-
-  // Form state
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [cpf, setCpf] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-
-  // Pix state
-  const [pixData, setPixData] = useState<CheckoutResponse | null>(null)
+  const [product, setProduct]         = useState<Product | null>(null)
+  const [loadingProduct, setLoading]  = useState(true)
+  const [step, setStep]               = useState<Step>('form')
+  const [name, setName]               = useState('')
+  const [email, setEmail]             = useState('')
+  const [cpf, setCpf]                 = useState('')
+  const [submitting, setSubmitting]   = useState(false)
+  const [pixData, setPixData]         = useState<CheckoutResponse | null>(null)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Load user data
+  // Pré-preencher com dados do usuário logado (opcional)
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push(`/login?next=/checkout?produto=${slug}`); return }
+      if (!user) return
       setEmail(user.email ?? '')
-      supabase.from('profiles').select('full_name').eq('id', user.id).single().then(({ data }) => {
-        if (data?.full_name) setName(data.full_name)
-      })
+      supabase.from('profiles').select('full_name').eq('id', user.id).single()
+        .then(({ data }) => { if (data?.full_name) setName(data.full_name) })
     })
-  }, [slug, router, supabase])
+  }, [supabase])
 
-  // Load product
+  // Carregar produto
   useEffect(() => {
-    if (!slug) { setLoadingProduct(false); return }
+    if (!slug) { setLoading(false); return }
     supabase.from('products').select('*').eq('slug', slug).eq('is_active', true).single()
-      .then(({ data }) => { setProduct(data as Product); setLoadingProduct(false) })
+      .then(({ data }) => { setProduct(data as Product); setLoading(false) })
   }, [slug, supabase])
 
   const stopPolling = useCallback(() => {
@@ -58,7 +60,7 @@ function CheckoutContent() {
       const res = await fetch(`/api/pedidos/${orderId}/status`)
       if (!res.ok) return
       const { status } = await res.json()
-      if (status === 'paid') { stopPolling(); setStep('success') }
+      if (status === 'paid')   { stopPolling(); setStep('success') }
       if (status === 'failed') { stopPolling(); toast.error('Pagamento não aprovado.') }
     }, 5000)
   }, [stopPolling])
@@ -105,21 +107,25 @@ function CheckoutContent() {
     )
   }
 
-  if (step === 'success') {
+  if (step === 'success' && pixData) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
           <CheckCircle2 size={56} className="text-brand-green-dark mx-auto mb-4" />
           <h1 className="font-display font-bold text-2xl text-gray-800">Pagamento confirmado!</h1>
           <p className="text-gray-500 mt-2 text-sm">
-            Seu PDF está disponível para download na área de pedidos.
+            Seu PDF está pronto para download.
           </p>
           <a
-            href="/cliente/pedidos"
-            className="mt-8 inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-dark text-gray-800 font-display font-semibold px-6 py-3 rounded-xl transition-colors"
+            href={`/api/download?token=${pixData.downloadToken}`}
+            className="mt-6 w-full flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-dark text-gray-800 font-display font-bold px-6 py-4 rounded-xl transition-colors"
           >
-            Ir para meus pedidos
+            <Download size={18} />
+            Baixar PDF agora
           </a>
+          <p className="text-xs text-gray-400 mt-3">
+            O link também foi enviado para o seu e-mail.
+          </p>
         </div>
       </div>
     )
@@ -146,44 +152,32 @@ function CheckoutContent() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-600" htmlFor="name">Nome completo</label>
-            <input
-              id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)}
+            <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)}
               className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
-              placeholder="Como aparece no CPF"
-            />
+              placeholder="Como aparece no CPF" />
           </div>
           <div>
             <label className="text-sm font-medium text-gray-600" htmlFor="email">E-mail</label>
-            <input
-              id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
-              placeholder="seu@email.com"
-            />
+              placeholder="Para receber o link de download" />
           </div>
           <div>
             <label className="text-sm font-medium text-gray-600" htmlFor="cpf">CPF</label>
-            <input
-              id="cpf" type="text" required value={cpf}
-              onChange={(e) => setCpf(maskCPF(e.target.value))}
+            <input id="cpf" type="text" required value={cpf} onChange={(e) => setCpf(maskCPF(e.target.value))}
               className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
-              placeholder="000.000.000-00"
-              maxLength={14}
-              aria-label="CPF"
-            />
+              placeholder="000.000.000-00" maxLength={14} aria-label="CPF" />
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-brand-green hover:bg-brand-green-dark text-gray-800 font-display font-bold py-4 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2 text-base"
-          >
-            {submitting ? <Loader2 size={18} className="animate-spin" /> : null}
+          <button type="submit" disabled={submitting}
+            className="w-full bg-brand-green hover:bg-brand-green-dark text-gray-800 font-display font-bold py-4 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2 text-base">
+            {submitting && <Loader2 size={18} className="animate-spin" />}
             {submitting ? 'Gerando Pix...' : 'Gerar Pix'}
           </button>
 
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mt-2">
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
             <ShieldCheck size={14} />
-            Pagamento seguro via Mercado Pago
+            Pagamento seguro via Mercado Pago · <a href="/politica" className="underline">Política de reembolso</a>
           </div>
         </form>
       )}
@@ -211,11 +205,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-brand-green border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><div className="w-6 h-6 border-2 border-brand-green border-t-transparent rounded-full animate-spin" /></div>}>
       <CheckoutContent />
     </Suspense>
   )
