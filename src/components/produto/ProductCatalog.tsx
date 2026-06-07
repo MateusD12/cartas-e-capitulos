@@ -7,7 +7,13 @@ import {
   ChevronDown,
   Folder,
   Store,
+  User,
+  Heart,
+  ShoppingBag,
+  LayoutDashboard,
+  LogOut,
 } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from './ProductGrid'
 import { SkeletonGrid } from './SkeletonCard'
@@ -67,6 +73,7 @@ export function ProductCatalog() {
   }, [products])
 
   const [expandedSidebarCategory, setExpandedSidebarCategory] = useState<string | null>(null)
+  const { user, profile, loading: authLoading, signOut } = useAuth()
 
   const categoriesWithThemes = useMemo(() => {
     const map = new Map<string, Set<string>>()
@@ -136,119 +143,146 @@ export function ProductCatalog() {
             </button>
           </div>
 
-          <div className="p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
-            <div className="space-y-1">
-              {categoriesWithThemes.map((item) => {
-                const isActiveCategory = categoryFilter === item.category
-                return (
-                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
-                        setExpandedSidebarCategory(nextExpanded)
-                        setCategoryFilter(item.category)
-                        if (!isActiveCategory) setThemeFilter('')
-                      }}
-                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
-                        isActiveCategory
-                          ? 'bg-brand-green/30 text-gray-900 font-medium'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Folder size={16} />
-                        {item.category}
-                      </span>
-                      <ChevronDown
-                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
-                        size={16}
-                      />
-                    </button>
-                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
-                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
-                        {item.themes.map((theme) => (
-                          <button
-                            key={theme}
-                            type="button"
-                            onClick={() => {
-                              setCategoryFilter(item.category)
-                              setThemeFilter(theme)
-                            }}
-                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
-                              themeFilter === theme
-                                ? 'bg-brand-green/15 text-gray-900 font-medium'
-                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
-                            }`}
-                          >
-                            {theme}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+          <nav className="flex-1 p-3 space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Categoria</p>
+              <div className="space-y-2">
+                {categoriesWithThemes.map((item) => {
+                  const isActiveCategory = categoryFilter === item.category
+                  return (
+                    <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                          setExpandedSidebarCategory(nextExpanded)
+                          setCategoryFilter(item.category)
+                          if (!isActiveCategory) setThemeFilter('')
+                        }}
+                        className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
+                          isActiveCategory
+                            ? 'bg-brand-green/30 text-gray-900 font-medium'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Folder size={16} />
+                          {item.category}
+                        </span>
+                        <ChevronDown
+                          className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                          size={16}
+                        />
+                      </button>
+                      {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                        <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                          {item.themes.map((theme) => (
+                            <button
+                              key={theme}
+                              type="button"
+                              onClick={() => {
+                                setCategoryFilter(item.category)
+                                setThemeFilter(theme)
+                              }}
+                              className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                                themeFilter === theme
+                                  ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                  : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                              }`}
+                            >
+                              {theme}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          </div>
 
-          <div className="p-3 border-t border-gray-100">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
-            <div className="space-y-1">
-              {categoriesWithThemes.map((item) => {
-                const isActiveCategory = categoryFilter === item.category
-                return (
-                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+            <div className="p-3 rounded-3xl border border-gray-100 bg-gray-50">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Conta</p>
+              <div className="space-y-2">
+                {!authLoading && !user ? (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/login')}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left bg-brand-green/10 hover:bg-brand-green/20 transition-colors"
+                  >
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green text-gray-800 flex-shrink-0">
+                      <User size={16} />
+                    </span>
+                    <span className="text-sm font-semibold text-gray-800">Entrar</span>
+                  </button>
+                ) : (
+                  <>
                     <button
                       type="button"
-                      onClick={() => {
-                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
-                        setExpandedSidebarCategory(nextExpanded)
-                        setCategoryFilter(item.category)
-                        if (!isActiveCategory) setThemeFilter('')
-                      }}
-                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
-                        isActiveCategory
-                          ? 'bg-brand-green/30 text-gray-900 font-medium'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
+                      onClick={() => router.push('/cliente/conta')}
+                      className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-white transition-colors"
                     >
-                      <span className="flex items-center gap-2">
-                        <Folder size={16} />
-                        {item.category}
+                      <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
+                        <User size={16} />
                       </span>
-                      <ChevronDown
-                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
-                        size={16}
-                      />
+                      <span className="text-sm font-medium text-gray-700">Minha conta</span>
                     </button>
-                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
-                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
-                        {item.themes.map((theme) => (
-                          <button
-                            key={theme}
-                            type="button"
-                            onClick={() => {
-                              setCategoryFilter(item.category)
-                              setThemeFilter(theme)
-                            }}
-                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
-                              themeFilter === theme
-                                ? 'bg-brand-green/15 text-gray-900 font-medium'
-                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
-                            }`}
-                          >
-                            {theme}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+
+                    <button
+                      type="button"
+                      onClick={() => router.push('/cliente/favoritos')}
+                      className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-white transition-colors"
+                    >
+                      <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-pink-50 text-pink-600 flex-shrink-0">
+                        <Heart size={16} />
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">Favoritos</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => router.push('/cliente/pedidos')}
+                      className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-white transition-colors"
+                    >
+                      <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green/20 text-green-700 flex-shrink-0">
+                        <ShoppingBag size={16} />
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">Meus pedidos</span>
+                    </button>
+                  </>
+                )}
+
+                {!authLoading && profile?.is_admin && (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/admin')}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-white transition-colors"
+                  >
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-50 text-purple-600 flex-shrink-0">
+                      <LayoutDashboard size={16} />
+                    </span>
+                    <span className="text-sm font-medium text-gray-700">Admin</span>
+                  </button>
+                )}
+
+                {user && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signOut()
+                      router.push('/')
+                    }}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-gray-700 hover:bg-white transition-colors"
+                  >
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
+                      <LogOut size={16} />
+                    </span>
+                    <span className="text-sm font-medium">Sair</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          </nav>
         </aside>
 
         <div>
