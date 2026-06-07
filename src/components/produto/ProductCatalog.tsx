@@ -7,13 +7,7 @@ import {
   ChevronDown,
   Folder,
   Store,
-  User,
-  Heart,
-  ShoppingBag,
-  LayoutDashboard,
-  LogOut,
 } from 'lucide-react'
-import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from './ProductGrid'
 import { SkeletonGrid } from './SkeletonCard'
@@ -73,7 +67,6 @@ export function ProductCatalog() {
   }, [products])
 
   const [expandedSidebarCategory, setExpandedSidebarCategory] = useState<string | null>(null)
-  const { user, profile, loading: authLoading, signOut } = useAuth()
 
   const categoriesWithThemes = useMemo(() => {
     const map = new Map<string, Set<string>>()
@@ -129,10 +122,10 @@ export function ProductCatalog() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6">
-        <aside className="hidden md:flex w-56 bg-white border-r border-gray-200 flex-col flex-shrink-0">
+        <aside className="hidden lg:flex w-72 bg-white border border-gray-200 rounded-3xl flex-col flex-shrink-0 overflow-hidden">
           <div className="p-5 border-b border-gray-100">
             <span className="font-display font-bold text-gray-800 text-sm">Cartas & Capítulos</span>
-            <p className="text-xs text-gray-400 mt-0.5">Catálogo</p>
+            <p className="text-xs text-gray-400 mt-0.5">Painel de navegação</p>
             <button
               type="button"
               onClick={() => router.push('/')}
@@ -143,43 +136,127 @@ export function ProductCatalog() {
             </button>
           </div>
 
-          <nav className="flex-1 p-3 space-y-0.5">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Categoria</p>
-            <div className="p-3">
-              <p className="text-sm text-gray-600">Categorias cadastradas</p>
+          <div className="p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
+            <div className="space-y-1">
+              {categoriesWithThemes.map((item) => {
+                const isActiveCategory = categoryFilter === item.category
+                return (
+                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                        setExpandedSidebarCategory(nextExpanded)
+                        setCategoryFilter(item.category)
+                        if (!isActiveCategory) setThemeFilter('')
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
+                        isActiveCategory
+                          ? 'bg-brand-green/30 text-gray-900 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Folder size={16} />
+                        {item.category}
+                      </span>
+                      <ChevronDown
+                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                        size={16}
+                      />
+                    </button>
+                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                        {item.themes.map((theme) => (
+                          <button
+                            key={theme}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilter(item.category)
+                              setThemeFilter(theme)
+                            }}
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                              themeFilter === theme
+                                ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                            }`}
+                          >
+                            {theme}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
+          </div>
 
-            <div className="mt-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Conta</p>
-              <div className="mt-1 space-y-0.5">
-                <button type="button" onClick={() => router.push('/login')} className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left bg-brand-green/10 hover:bg-brand-green/20 transition-colors">
-                  <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green text-gray-800 flex-shrink-0">
-                    <User size={16} />
-                  </span>
-                  <span className="text-sm font-semibold text-gray-800">Entrar</span>
-                </button>
-              </div>
+          <div className="p-3 border-t border-gray-100">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
+            <div className="space-y-1">
+              {categoriesWithThemes.map((item) => {
+                const isActiveCategory = categoryFilter === item.category
+                return (
+                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                        setExpandedSidebarCategory(nextExpanded)
+                        setCategoryFilter(item.category)
+                        if (!isActiveCategory) setThemeFilter('')
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
+                        isActiveCategory
+                          ? 'bg-brand-green/30 text-gray-900 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Folder size={16} />
+                        {item.category}
+                      </span>
+                      <ChevronDown
+                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                        size={16}
+                      />
+                    </button>
+                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                        {item.themes.map((theme) => (
+                          <button
+                            key={theme}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilter(item.category)
+                              setThemeFilter(theme)
+                            }}
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                              themeFilter === theme
+                                ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                            }`}
+                          >
+                            {theme}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-
-            <div className="mt-4">
-              <div className="space-y-2">
-                <button type="button" className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors">
-                  <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
-                    <LogOut size={16} />
-                  </span>
-                  <span className="text-sm font-medium">Sair</span>
-                </button>
-              </div>
-            </div>
-          </nav>
+          </div>
         </aside>
 
         <div>
           <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Cat&aacute;logo</p>
-                <h1 className="mt-2 text-3xl font-display font-bold text-gray-900">Produtos dispon&iacute;veis</h1>
+                <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
+                <h1 className="mt-2 text-3xl font-display font-bold text-gray-900">Produtos disponíveis</h1>
               </div>
             </div>
 
@@ -229,9 +306,9 @@ export function ProductCatalog() {
             )}
           </div>
 
-            <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
-              <p className="text-sm text-gray-500">Produtos dispon&iacute;veis</p>
+              <p className="text-sm text-gray-500">Produtos disponíveis</p>
               <p className="text-xl font-semibold text-gray-900">{loading ? 'Carregando...' : `${filteredProducts.length} item${filteredProducts.length === 1 ? '' : 's'}`}</p>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">

@@ -5,24 +5,24 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    q: 'Como recebo o arquivo ap&oacute;s o pagamento?',
-    a: 'Assim que o Pix for confirmado (normalmente em segundos), o bot&atilde;o de download fica dispon&iacute;vel na &aacute;rea "Meus Pedidos". Voc&ecirc; pode baixar o PDF quantas vezes quiser.',
+    q: 'Como recebo o arquivo após o pagamento?',
+    a: 'Assim que o Pix for confirmado (normalmente em segundos), o botão de download fica disponível na área "Meus Pedidos". Você pode baixar o PDF quantas vezes quiser.',
   },
   {
     q: 'Posso imprimir em casa?',
-    a: 'Sim! Todos os arquivos s&atilde;o otimizados para impress&atilde;o dom&eacute;stica em papel A4. Recomendamos papel 180g para melhor resultado.',
+    a: 'Sim! Todos os arquivos são otimizados para impressão doméstica em papel A4. Recomendamos papel 180g para melhor resultado.',
   },
   {
     q: 'Quantas vezes posso baixar o arquivo?',
-    a: 'Sem limite. O arquivo fica dispon&iacute;vel permanentemente na sua conta.',
+    a: 'Sem limite. O arquivo fica disponível permanentemente na sua conta.',
   },
   {
     q: 'Posso compartilhar o arquivo?',
-    a: 'Os arquivos s&atilde;o para uso pessoal e familiar. N&atilde;o &eacute; permitida a revenda ou distribui&ccedil;&atilde;o em massa.',
+    a: 'Os arquivos são para uso pessoal e familiar. Não é permitida a revenda ou distribuição em massa.',
   },
   {
-    q: 'E se meu pagamento n&atilde;o for confirmado?',
-    a: 'O Pix tem validade de 15 minutos. Se expirar sem confirma&ccedil;&atilde;o, basta fazer um novo pedido. Em caso de d&uacute;vidas, entre em contato.',
+    q: 'E se meu pagamento não for confirmado?',
+    a: 'O Pix tem validade de 15 minutos. Se expirar sem confirmação, basta fazer um novo pedido. Em caso de dúvidas, entre em contato.',
   },
 ]
 

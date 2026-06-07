@@ -70,12 +70,12 @@ export default function ClienteFavoritosPage() {
         <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm text-gray-500">
           <p className="text-lg font-medium text-gray-900">Nenhum favorito ainda</p>
           <p className="mt-2">Clique no coração de um produto para salvá-lo e voltar depois.</p>
-            <button
+          <button
             type="button"
             onClick={() => router.push('/')}
             className="mt-4 rounded-2xl bg-brand-green px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-brand-green-dark transition"
           >
-            Ver cat&aacute;logo
+            Ver catálogo
           </button>
         </div>
       ) : (

@@ -144,7 +144,7 @@ export function Header() {
 
         <div className="flex-1 overflow-y-auto py-4 px-4 space-y-6">
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Navega&ccedil;&atilde;o</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Navegação</p>
             <div className="space-y-1">
               <button
                 type="button"
@@ -164,7 +164,7 @@ export function Header() {
 
           <div>
             <div className="flex items-center justify-between px-2 mb-2">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cat&aacute;logo</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Catálogo</p>
               <button
                 type="button"
                 onClick={() => setCatalogOpen((current) => !current)}
