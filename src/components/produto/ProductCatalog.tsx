@@ -244,7 +244,7 @@ export function ProductCatalog() {
                 )}
               </div>
             </div>
-          </div>
+          </nav>
         </aside>
 
         <div>
