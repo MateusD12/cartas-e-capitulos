@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Search,
   Funnel,
@@ -9,8 +10,16 @@ import {
   ArrowDown,
   ChevronDown,
   Folder,
+  User,
+  Heart,
+  ShoppingBag,
+  LayoutDashboard,
+  LogOut,
+  LogIn,
+  UserPlus,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/hooks/useAuth'
 import { ProductGrid } from './ProductGrid'
 import { SkeletonGrid } from './SkeletonCard'
 import { getCategoryLabel } from '@/lib/utils'
@@ -27,6 +36,8 @@ function normalizeThemes(raw?: string | null) {
 }
 
 export function ProductCatalog() {
+  const router = useRouter()
+  const { user, profile, loading: authLoading, signOut } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -143,6 +154,87 @@ export function ProductCatalog() {
                   className="w-full rounded-3xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-700 outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
                 />
               </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm font-semibold text-gray-700">Conta</p>
+              {authLoading ? (
+                <div className="space-y-2">
+                  <div className="h-10 rounded-3xl bg-gray-100 animate-pulse" />
+                  <div className="h-10 rounded-3xl bg-gray-100 animate-pulse" />
+                </div>
+              ) : user ? (
+                <div className="grid gap-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/cliente/conta')}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <User size={16} /> Minha conta
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/cliente/favoritos')}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Heart size={16} /> Favoritos
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/cliente/pedidos')}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag size={16} /> Meus pedidos
+                    </div>
+                  </button>
+                  {profile?.is_admin && (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/admin')}
+                      className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                    >
+                      <div className="flex items-center gap-2">
+                        <LayoutDashboard size={16} /> Admin
+                      </div>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    className="w-full rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-medium text-red-700 hover:bg-red-100 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <LogOut size={16} /> Sair
+                    </div>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid gap-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/login')}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <LogIn size={16} /> Entrar
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/cadastro')}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <UserPlus size={16} /> Criar conta
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">
