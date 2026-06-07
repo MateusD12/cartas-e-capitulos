@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Pencil, Power } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -9,6 +10,7 @@ import { formatCurrency, getCategoryLabel, getCategoryColor } from '@/lib/utils'
 import type { Product } from '@/types'
 
 export default function AdminProdutosPage() {
+  const router = useRouter()
   const [products, setProducts]   = useState<Product[]>([])
   const [loading, setLoading]     = useState(true)
   const [showForm, setShowForm]   = useState(false)
@@ -36,7 +38,7 @@ export default function AdminProdutosPage() {
       <div className="flex items-center justify-between mb-5">
         <h1 className="font-display font-bold text-xl md:text-2xl text-gray-800">Produtos</h1>
         <button
-          onClick={() => { setEditing(null); setShowForm(true) }}
+          onClick={() => router.push('/admin/produtos/novo')}
           className="flex items-center gap-2 bg-brand-green hover:bg-brand-green-dark text-gray-800 font-medium px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-sm transition-colors"
         >
           <Plus size={16} />

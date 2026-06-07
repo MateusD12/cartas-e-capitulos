@@ -11,6 +11,7 @@ interface ProductFormProps {
   product?: Product | null
   onClose: () => void
   onSaved: () => void
+  variant?: 'modal' | 'page'
 }
 
 function unique(values: string[]) {
@@ -21,8 +22,9 @@ function joinValues(values: string[]): string | null {
   return values.length > 0 ? values.join(', ') : null
 }
 
-export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
+export function ProductForm({ product, onClose, onSaved, variant = 'modal' }: ProductFormProps) {
   const supabase = createClient()
+  const isPage = variant === 'page'
   const [saving, setSaving] = useState(false)
   const [categoryOptions, setCategoryOptions] = useState<string[]>([])
   const [themeOptions, setThemeOptions] = useState<string[]>([])
@@ -154,8 +156,8 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
   const existingPdfFiles = product?.pdf_storage_path ? product.pdf_storage_path.split(',').map((path) => path.trim()).filter(Boolean) : []
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+    <div className={isPage ? 'px-4 py-8' : 'fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4'}>
+      <div className={isPage ? 'bg-white rounded-2xl w-full max-w-4xl mx-auto overflow-y-auto shadow-xl' : 'bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl'}>
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="font-display font-bold text-gray-800">
             {product ? 'Editar produto' : 'Novo produto'}
