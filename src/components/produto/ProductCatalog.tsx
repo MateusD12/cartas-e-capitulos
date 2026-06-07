@@ -133,24 +133,24 @@ export function ProductCatalog() {
           <div className="p-5 border-b border-gray-100">
             <span className="font-display font-bold text-gray-800 text-sm">Cartas & Capítulos</span>
             <p className="text-xs text-gray-400 mt-0.5">Catálogo</p>
-            <a
-              href="/"
-              onClick={(e) => { e.preventDefault(); router.push('/') }}
+            <button
+              type="button"
+              onClick={() => router.push('/')}
               className="mt-3 flex items-center gap-1.5 text-xs text-brand-green-dark hover:underline"
             >
               <Store size={12} />
               Ver loja
-            </a>
+            </button>
           </div>
 
           <nav className="flex-1 p-3 space-y-0.5">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Categoria</p>
             {categoriesWithThemes.map((item) => (
-              <a
+              <button
                 key={item.category}
-                onClick={(e) => { e.preventDefault(); setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category) }}
-                href={`/?categoria=${encodeURIComponent(item.category)}`}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                type="button"
+                onClick={() => { setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category); router.push(`/?categoria=${encodeURIComponent(item.category)}`) }}
+                className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   categoryFilter === item.category
                     ? 'bg-brand-green/30 text-gray-900 font-medium'
                     : 'text-gray-600 hover:bg-brand-green/15 hover:text-gray-900'
@@ -158,7 +158,7 @@ export function ProductCatalog() {
               >
                 <Folder size={16} />
                 <span className="truncate">{item.category}</span>
-              </a>
+              </button>
             ))}
 
             <div className="mt-3">
