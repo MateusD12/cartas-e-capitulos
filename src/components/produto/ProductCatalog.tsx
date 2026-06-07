@@ -159,6 +159,7 @@ export function ProductCatalog() {
                   <span className="text-sm font-semibold text-gray-800">Entrar</span>
                 </button>
               </div>
+            </div>
 
             <div className="mt-4">
               <div className="space-y-2">
