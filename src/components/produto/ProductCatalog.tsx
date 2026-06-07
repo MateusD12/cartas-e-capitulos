@@ -129,31 +129,41 @@ export function ProductCatalog() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6">
-        <aside className="hidden lg:flex w-72 bg-white border border-gray-200 rounded-3xl flex-col flex-shrink-0 overflow-hidden">
-          <div className="p-4 border-b border-gray-100">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Categoria</p>
-            <div className="mt-3 space-y-1">
-              {categoriesWithThemes.map((item) => (
-                <button
-                  key={item.category}
-                  type="button"
-                  onClick={() => {
-                    setCategoryFilter(item.category)
-                    setThemeFilter('')
-                    setExpandedSidebarCategory(item.category)
-                  }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm rounded-2xl transition text-gray-600 hover:bg-gray-50`}
-                >
-                  <Folder size={16} />
-                  <span className="truncate">{item.category}</span>
-                </button>
-              ))}
-            </div>
+        <aside className="hidden md:flex w-56 bg-white border-r border-gray-200 flex-col flex-shrink-0">
+          <div className="p-5 border-b border-gray-100">
+            <span className="font-display font-bold text-gray-800 text-sm">Cartas & Capítulos</span>
+            <p className="text-xs text-gray-400 mt-0.5">Catálogo</p>
+            <a
+              href="/"
+              onClick={(e) => { e.preventDefault(); router.push('/') }}
+              className="mt-3 flex items-center gap-1.5 text-xs text-brand-green-dark hover:underline"
+            >
+              <Store size={12} />
+              Ver loja
+            </a>
           </div>
 
-          <div className="p-4 border-t border-gray-100">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Conta</p>
-            <div className="mt-3 space-y-1">
+          <nav className="flex-1 p-3 space-y-0.5">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Categoria</p>
+            {categoriesWithThemes.map((item) => (
+              <a
+                key={item.category}
+                onClick={(e) => { e.preventDefault(); setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category) }}
+                href={`/?categoria=${encodeURIComponent(item.category)}`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                  categoryFilter === item.category
+                    ? 'bg-brand-green/30 text-gray-900 font-medium'
+                    : 'text-gray-600 hover:bg-brand-green/15 hover:text-gray-900'
+                }`}
+              >
+                <Folder size={16} />
+                <span className="truncate">{item.category}</span>
+              </a>
+            ))}
+
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Conta</p>
+              <div className="mt-1 space-y-0.5">
               {!authLoading && !user ? (
                 <>
                   <button
