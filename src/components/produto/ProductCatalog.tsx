@@ -11,6 +11,8 @@ import {
   BookOpen,
   Gift,
   ClipboardList,
+  ChevronDown,
+  Folder,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from './ProductGrid'
@@ -91,6 +93,26 @@ export function ProductCatalog() {
     return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'))
   }, [products])
 
+  const [expandedSidebarCategory, setExpandedSidebarCategory] = useState<string | null>(null)
+
+  const categoriesWithThemes = useMemo(() => {
+    const map = new Map<string, Set<string>>()
+    products.forEach((product) => {
+      const category = product.category?.trim() || 'Sem categoria'
+      const themes = normalizeThemes(product.theme)
+
+      if (!map.has(category)) map.set(category, new Set())
+      themes.forEach((theme) => map.get(category)?.add(theme))
+    })
+
+    return Array.from(map.entries())
+      .map(([category, themes]) => ({
+        category,
+        themes: Array.from(themes).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+      }))
+      .sort((a, b) => a.category.localeCompare(b.category, 'pt-BR'))
+  }, [products])
+
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase()
     const result = products.filter((product) => {
@@ -126,7 +148,81 @@ export function ProductCatalog() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm">
+      <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6">
+        <aside className="hidden lg:block rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Navegação</p>
+              <div className="mt-3 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Início
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHowOpen(true)}
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Como funciona
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Categorias</p>
+              <div className="mt-3 space-y-3">
+                {categoriesWithThemes.map((item) => (
+                  <div key={item.category} className="rounded-3xl border border-gray-100 bg-gray-50">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedSidebarCategory((current) => (current === item.category ? null : item.category))}
+                      onDoubleClick={() => {
+                        setCategoryFilter(item.category)
+                        setThemeFilter('')
+                      }}
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Folder size={16} />
+                        {item.category}
+                      </span>
+                      <ChevronDown className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180' : ''}`} size={16} />
+                    </button>
+                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                      <div className="space-y-1 border-t border-gray-100 px-3 py-2">
+                        <p className="text-[11px] text-gray-400 mb-2">Clique para expandir. Duplo clique para filtrar.</p>
+                        {item.themes.map((theme) => (
+                          <button
+                            key={theme}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilter(item.category)
+                              setThemeFilter(theme)
+                            }}
+                            className="w-full rounded-2xl px-3 py-2 text-left text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition"
+                          >
+                            {theme}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-600">
+              <p className="font-semibold text-gray-900 mb-2">Dica</p>
+              Use o painel lateral para navegar pelas categorias e subcategorias do catálogo sem precisar do menu superior.
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
@@ -341,6 +437,8 @@ export function ProductCatalog() {
           </div>
         </div>
       )}
+      </div>
+      </div>
     </div>
   )
 }

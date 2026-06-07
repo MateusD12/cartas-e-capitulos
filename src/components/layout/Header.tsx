@@ -97,13 +97,7 @@ export function Header() {
           </a>
 
           {/* Nav desktop */}
-          <nav className="hidden md:flex items-center gap-6">
-            {defaultCategories.map((c) => (
-              <a key={c.href} href={c.href} className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                {c.label}
-              </a>
-            ))}
-          </nav>
+          {/* categorias agora aparecem no painel lateral da página principal */}
 
           {/* Ações desktop */}
           <div className="hidden md:flex items-center gap-2">
