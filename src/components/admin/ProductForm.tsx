@@ -27,7 +27,9 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
   const [categoryOptions, setCategoryOptions] = useState<string[]>([])
   const [themeOptions, setThemeOptions] = useState<string[]>([])
   const [categoryInput, setCategoryInput] = useState(product?.category ?? '')
+  const [categoryFocused, setCategoryFocused] = useState(false)
   const [themeInput, setThemeInput] = useState('')
+  const [themeFocused, setThemeFocused] = useState(false)
   const [themeTags, setThemeTags] = useState<string[]>(
     product?.theme ? product.theme.split(',').map((tag) => tag.trim()).filter(Boolean) : []
   )
@@ -56,6 +58,15 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
 
     loadOptions()
   }, [supabase])
+
+  const filteredCategoryOptions = categoryOptions.filter((category) =>
+    category.toLowerCase().includes(categoryInput.toLowerCase())
+  )
+
+  const filteredThemeOptions = themeOptions.filter(
+    (theme) =>
+      theme.toLowerCase().includes(themeInput.toLowerCase()) && !themeTags.includes(theme)
+  )
 
   const addThemeTag = () => {
     const values = themeInput
@@ -188,20 +199,34 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               />
             </div>
-            <div>
+            <div className="relative">
               <label className="text-sm font-medium text-gray-600">Categoria</label>
               <input
-                list="category-options"
                 value={categoryInput}
                 onChange={(e) => setCategoryInput(e.target.value)}
+                onFocus={() => setCategoryFocused(true)}
+                onBlur={() => setTimeout(() => setCategoryFocused(false), 150)}
                 placeholder="Pesquisar ou adicionar"
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               />
-              <datalist id="category-options">
-                {categoryOptions.map((category) => (
-                  <option key={category} value={category} />
-                ))}
-              </datalist>
+              {categoryFocused && filteredCategoryOptions.length > 0 && (
+                <div className="absolute left-0 right-0 z-10 mt-1 max-h-52 overflow-auto rounded-2xl border border-gray-200 bg-white shadow-lg">
+                  {filteredCategoryOptions.map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setCategoryInput(category)
+                        setCategoryFocused(false)
+                      }}
+                      className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
               <p className="text-xs text-gray-500 mt-1">Digite ou selecione uma categoria. Se não existir, ela será criada automaticamente.</p>
             </div>
           </div>
@@ -219,33 +244,49 @@ export function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
                 </span>
               ))}
             </div>
-            <div className="mt-3 flex gap-2">
-              <input
-                list="theme-options"
-                value={themeInput}
-                onChange={(e) => setThemeInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    addThemeTag()
-                  }
-                }}
-                placeholder="Pesquisar ou adicionar subcategoria"
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
-              />
-              <button
-                type="button"
-                onClick={addThemeTag}
-                className="rounded-xl bg-brand-green px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-brand-green-dark transition"
-              >
-                Adicionar
-              </button>
+            <div className="relative">
+              <div className="mt-3 flex gap-2">
+                <input
+                  value={themeInput}
+                  onChange={(e) => setThemeInput(e.target.value)}
+                  onFocus={() => setThemeFocused(true)}
+                  onBlur={() => setTimeout(() => setThemeFocused(false), 150)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addThemeTag()
+                    }
+                  }}
+                  placeholder="Pesquisar ou adicionar subcategoria"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                />
+                <button
+                  type="button"
+                  onClick={addThemeTag}
+                  className="rounded-xl bg-brand-green px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-brand-green-dark transition"
+                >
+                  Adicionar
+                </button>
+              </div>
+              {themeFocused && filteredThemeOptions.length > 0 && (
+                <div className="absolute left-0 right-0 z-10 mt-1 max-h-52 overflow-auto rounded-2xl border border-gray-200 bg-white shadow-lg">
+                  {filteredThemeOptions.map((theme) => (
+                    <button
+                      key={theme}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setThemeInput(theme)
+                        setThemeFocused(false)
+                      }}
+                      className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      {theme}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <datalist id="theme-options">
-              {themeOptions.map((theme) => (
-                <option key={theme} value={theme} />
-              ))}
-            </datalist>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
