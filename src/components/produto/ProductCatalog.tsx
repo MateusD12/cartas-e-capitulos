@@ -149,7 +149,7 @@ export function ProductCatalog() {
               <button
                 key={item.category}
                 type="button"
-                onClick={() => { setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category); router.push(`/?categoria=${encodeURIComponent(item.category)}`) }}
+                onClick={() => { setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category); router.push('/?categoria=' + encodeURIComponent(item.category)) }}
                 className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   categoryFilter === item.category
                     ? 'bg-brand-green/30 text-gray-900 font-medium'
