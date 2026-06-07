@@ -100,39 +100,6 @@ export function Header() {
           {/* Nav desktop */}
           {/* categorias agora aparecem no painel lateral da página principal */}
 
-          {/* Ações desktop */}
-          <div className="hidden md:flex items-center gap-2">
-            {loading ? null : user ? (
-              <>
-                <a href="/cliente/conta" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                  <User size={15} /> Minha conta
-                </a>
-                <a href="/cliente/favoritos" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                  <Heart size={15} /> Favoritos
-                </a>
-                <a href="/cliente/pedidos" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                  <ShoppingBag size={15} /> Meus pedidos
-                </a>
-                {profile?.is_admin && (
-                  <a href="/admin" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                    <LayoutDashboard size={15} /> Admin
-                  </a>
-                )}
-                <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors">
-                  <LogOut size={15} /> Sair
-                </button>
-              </>
-            ) : (
-              <>
-                <a href="/login" className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 transition-colors">
-                  Entrar
-                </a>
-                <a href="/cadastro" className="flex items-center gap-1.5 text-sm bg-brand-green hover:bg-brand-green-dark text-gray-800 font-medium px-4 py-1.5 rounded-lg transition-colors">
-                  <User size={15} /> Criar conta
-                </a>
-              </>
-            )}
-          </div>
 
           {/* Botão hamburguer mobile */}
           <button
