@@ -145,103 +145,29 @@ export function ProductCatalog() {
 
           <nav className="flex-1 p-3 space-y-0.5">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Categoria</p>
-            {categoriesWithThemes.map((item) => (
-              <button
-                key={item.category}
-                type="button"
-                onClick={() => { setCategoryFilter(item.category); setThemeFilter(''); setExpandedSidebarCategory(item.category); router.push('/?categoria=' + encodeURIComponent(item.category)) }}
-                className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  categoryFilter === item.category
-                    ? 'bg-brand-green/30 text-gray-900 font-medium'
-                    : 'text-gray-600 hover:bg-brand-green/15 hover:text-gray-900'
-                }`}
-              >
-                <Folder size={16} />
-                <span className="truncate">{item.category}</span>
-              </button>
-            ))}
+            <div className="p-3">
+              <p className="text-sm text-gray-600">Categorias cadastradas</p>
+            </div>
 
             <div className="mt-3">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 px-3 py-2">Conta</p>
               <div className="mt-1 space-y-0.5">
-              {!authLoading && !user ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/login')}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left bg-brand-green/10 hover:bg-brand-green/20 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green text-gray-800 flex-shrink-0">
-                      <User size={16} />
-                    </span>
-                    <span className="text-sm font-semibold text-gray-800">Entrar</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cliente/conta')}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
-                      <User size={16} />
-                    </span>
-                    <span className="text-sm font-medium text-gray-700">Minha conta</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cliente/favoritos')}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-pink-50 text-pink-600 flex-shrink-0">
-                      <Heart size={16} />
-                    </span>
-                    <span className="text-sm font-medium text-gray-700">Favoritos</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cliente/pedidos')}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green/20 text-green-700 flex-shrink-0">
-                      <ShoppingBag size={16} />
-                    </span>
-                    <span className="text-sm font-medium text-gray-700">Meus pedidos</span>
-                  </button>
-                </>
-              )}
-            </div>
+                <button type="button" onClick={() => router.push('/login')} className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left bg-brand-green/10 hover:bg-brand-green/20 transition-colors">
+                  <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green text-gray-800 flex-shrink-0">
+                    <User size={16} />
+                  </span>
+                  <span className="text-sm font-semibold text-gray-800">Entrar</span>
+                </button>
+              </div>
 
             <div className="mt-4">
               <div className="space-y-2">
-                {!authLoading && profile?.is_admin && (
-                  <button
-                    type="button"
-                    onClick={() => router.push('/admin')}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-50 text-purple-600 flex-shrink-0">
-                      <LayoutDashboard size={16} />
-                    </span>
-                    <span className="text-sm font-medium text-gray-700">Admin</span>
-                  </button>
-                )}
-
-                {user && (
-                  <button
-                    type="button"
-                    onClick={() => { signOut(); router.push('/') }}
-                    className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
-                      <LogOut size={16} />
-                    </span>
-                    <span className="text-sm font-medium">Sair</span>
-                  </button>
-                )}
+                <button type="button" className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-gray-50 transition-colors">
+                  <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
+                    <LogOut size={16} />
+                  </span>
+                  <span className="text-sm font-medium">Sair</span>
+                </button>
               </div>
             </div>
           </nav>
