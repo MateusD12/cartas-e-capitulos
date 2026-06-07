@@ -7,10 +7,6 @@ import {
   X,
   ArrowUp,
   ArrowDown,
-  Sparkles,
-  BookOpen,
-  Gift,
-  ClipboardList,
   ChevronDown,
   Folder,
 } from 'lucide-react'
@@ -20,26 +16,6 @@ import { SkeletonGrid } from './SkeletonCard'
 import { getCategoryLabel } from '@/lib/utils'
 import type { Product } from '@/types'
 
-const howItWorks = [
-  {
-    step: '1',
-    title: 'Escolha seu produto',
-    desc: 'Busque por tema, categoria ou palavra-chave e encontre o PDF certo para imprimir.',
-    color: 'bg-brand-green/20 text-green-700',
-  },
-  {
-    step: '2',
-    title: 'Filtre e organize',
-    desc: 'Use os filtros para ver por categoria, subcategoria, preço ou ordem alfabética.',
-    color: 'bg-brand-blue/20 text-blue-700',
-  },
-  {
-    step: '3',
-    title: 'Pague e baixe',
-    desc: 'Finalize a compra com Pix, receba o PDF e baixe imediatamente.',
-    color: 'bg-purple-100 text-purple-700',
-  },
-]
 
 function normalizeThemes(raw?: string | null) {
   return raw
@@ -55,7 +31,6 @@ export function ProductCatalog() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
-  const [howOpen, setHowOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState('')
   const [themeFilter, setThemeFilter] = useState('')
   const [sortOption, setSortOption] = useState<'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'>('price-asc')
@@ -161,13 +136,6 @@ export function ProductCatalog() {
                 >
                   Início
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setHowOpen(true)}
-                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                >
-                  Como funciona
-                </button>
               </div>
             </div>
 
@@ -223,30 +191,23 @@ export function ProductCatalog() {
 
         <div>
           <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-              Encontre seu produto por nome, tema ou categoria
-            </h1>
+          <div className="hidden lg:flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
+              <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+                Encontre seu produto por nome, tema ou categoria
+              </h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setFilterOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-brand-green text-gray-900 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-brand-green-dark transition"
+              >
+                <Funnel size={16} /> Filtros
+              </button>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setHowOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-            >
-              <Sparkles size={16} /> Como funciona?
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-brand-green text-gray-900 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-brand-green-dark transition"
-            >
-              <Funnel size={16} /> Filtros
-            </button>
-          </div>
-        </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
           <label className="relative block">
@@ -406,37 +367,6 @@ export function ProductCatalog() {
         </div>
       )}
 
-      {howOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-brand-green">Como funciona</p>
-                <h2 className="mt-2 text-2xl font-bold text-gray-900">Veja o processo em poucos passos</h2>
-              </div>
-              <button onClick={() => setHowOpen(false)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 transition">
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {howItWorks.map((item) => (
-                <div key={item.step} className="rounded-3xl border border-gray-200 p-5 text-center">
-                  <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-3xl text-xl font-bold ${item.color}`}>
-                    {item.step}
-                  </div>
-                  <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 text-sm text-gray-500">
-              <p>Este é um mockup rápido do fluxo: primeiro você pesquisa, depois escolhe filtros e, por fim, compra o PDF.</p>
-            </div>
-          </div>
-        </div>
-      )}
       </div>
       </div>
     </div>
