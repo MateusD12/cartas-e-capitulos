@@ -6,17 +6,9 @@ import {
   Search,
   ChevronDown,
   Folder,
-  User,
-  Heart,
-  ShoppingBag,
-  LayoutDashboard,
-  LogOut,
-  LogIn,
-  UserPlus,
   Store,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useAuth } from '@/hooks/useAuth'
 import { ProductGrid } from './ProductGrid'
 import { SkeletonGrid } from './SkeletonCard'
 import { getCategoryLabel } from '@/lib/utils'
@@ -34,7 +26,6 @@ function normalizeThemes(raw?: string | null) {
 
 export function ProductCatalog() {
   const router = useRouter()
-  const { user, profile, loading: authLoading, signOut } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -145,71 +136,62 @@ export function ProductCatalog() {
             </button>
           </div>
 
-          <nav className="flex flex-col gap-1.5 p-3">
-            {authLoading ? (
-              <>
-                <div className="h-10 rounded-2xl bg-gray-100 animate-pulse" />
-                <div className="h-10 rounded-2xl bg-gray-100 animate-pulse" />
-              </>
-            ) : user ? (
-              <>
-                <a
-                  href="/cliente/conta"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                >
-                  <User size={16} />
-                  Minha conta
-                </a>
-                <a
-                  href="/cliente/favoritos"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                >
-                  <Heart size={16} />
-                  Favoritos
-                </a>
-                <a
-                  href="/cliente/pedidos"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                >
-                  <ShoppingBag size={16} />
-                  Meus pedidos
-                </a>
-                {profile?.is_admin && (
-                  <a
-                    href="/admin"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                  >
-                    <LayoutDashboard size={16} />
-                    Admin
-                  </a>
-                )}
-                <a
-                  href="/api/auth/signout"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut size={16} />
-                  Sair
-                </a>
-              </>
-            ) : (
-              <>
-                <a
-                  href="/login"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                >
-                  <LogIn size={16} />
-                  Entrar
-                </a>
-                <a
-                  href="/cadastro"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
-                >
-                  <UserPlus size={16} />
-                  Criar conta
-                </a>
-              </>
-            )}
-          </nav>
+          <div className="p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
+            <div className="space-y-1">
+              {categoriesWithThemes.map((item) => {
+                const isActiveCategory = categoryFilter === item.category
+                return (
+                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                        setExpandedSidebarCategory(nextExpanded)
+                        setCategoryFilter(item.category)
+                        if (!isActiveCategory) setThemeFilter('')
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
+                        isActiveCategory
+                          ? 'bg-brand-green/30 text-gray-900 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Folder size={16} />
+                        {item.category}
+                      </span>
+                      <ChevronDown
+                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                        size={16}
+                      />
+                    </button>
+                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                        {item.themes.map((theme) => (
+                          <button
+                            key={theme}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilter(item.category)
+                              setThemeFilter(theme)
+                            }}
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                              themeFilter === theme
+                                ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                            }`}
+                          >
+                            {theme}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
 
           <div className="p-3 border-t border-gray-100">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
