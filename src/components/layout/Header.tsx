@@ -3,6 +3,7 @@
 import {
   ShoppingBag,
   User,
+  Heart,
   LogOut,
   LayoutDashboard,
   Menu,
@@ -29,7 +30,7 @@ const defaultCategories = [
 ]
 
 export function Header() {
-  const { user, profile, signOut } = useAuth()
+  const { user, profile, loading, signOut } = useAuth()
   const [open, setOpen] = useState(false)
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
@@ -101,16 +102,22 @@ export function Header() {
 
           {/* Ações desktop */}
           <div className="hidden md:flex items-center gap-2">
-            {user ? (
+            {loading ? null : user ? (
               <>
+                <a href="/cliente/conta" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                  <User size={15} /> Minha conta
+                </a>
+                <a href="/cliente/favoritos" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                  <Heart size={15} /> Favoritos
+                </a>
+                <a href="/cliente/pedidos" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                  <ShoppingBag size={15} /> Meus pedidos
+                </a>
                 {profile?.is_admin && (
                   <a href="/admin" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                     <LayoutDashboard size={15} /> Admin
                   </a>
                 )}
-                <a href="/cliente/pedidos" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                  <ShoppingBag size={15} /> Meus pedidos
-                </a>
                 <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors">
                   <LogOut size={15} /> Sair
                 </button>
@@ -263,8 +270,22 @@ export function Header() {
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Minha Conta</p>
             <div className="space-y-1">
-              {user ? (
+              {loading ? null : user ? (
                 <>
+                  <a href="/cliente/conta" onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
+                      <User size={16} />
+                    </span>
+                    <span className="text-sm font-medium text-gray-700">Minha conta</span>
+                  </a>
+                  <a href="/cliente/favoritos" onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-pink-50 text-pink-600 flex-shrink-0">
+                      <Heart size={16} />
+                    </span>
+                    <span className="text-sm font-medium text-gray-700">Favoritos</span>
+                  </a>
                   <a href="/cliente/pedidos" onClick={() => setOpen(false)}
                     className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors">
                     <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-green/20 text-green-700 flex-shrink-0">
@@ -272,7 +293,6 @@ export function Header() {
                     </span>
                     <span className="text-sm font-medium text-gray-700">Meus pedidos</span>
                   </a>
-
                   {profile?.is_admin && (
                     <a href="/admin" onClick={() => setOpen(false)}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors">
@@ -282,6 +302,13 @@ export function Header() {
                       <span className="text-sm font-medium text-gray-700">Painel Admin</span>
                     </a>
                   )}
+                  <button onClick={() => { setOpen(false); signOut() }}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-colors">
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-600 flex-shrink-0">
+                      <LogOut size={16} />
+                    </span>
+                    <span className="text-sm font-medium text-gray-700">Sair</span>
+                  </button>
                 </>
               ) : (
                 <>

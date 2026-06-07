@@ -1,9 +1,32 @@
+'use client'
+
 import Image from 'next/image'
-import { FileDown } from 'lucide-react'
+import { FileDown, Heart } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
+import { useFavorites } from '@/hooks/useFavorites'
 import { formatCurrency, getCategoryLabel, getCategoryColor } from '@/lib/utils'
 import type { Product } from '@/types'
 
 export function ProductCard({ product }: { product: Product }) {
+  const { user } = useAuth()
+  const router = useRouter()
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id)
+
+  const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!user) {
+      router.push(`/login?next=/produto/${product.slug}`)
+      return
+    }
+
+    toggleFavorite(product.id)
+  }
+
+  const activeFavorite = isFavorite(product.id)
+
   return (
     <a
       href={`/produto/${product.slug}`}
@@ -23,6 +46,17 @@ export function ProductCard({ product }: { product: Product }) {
             <FileDown size={32} className="text-gray-300" />
           </div>
         )}
+        <button
+          type="button"
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 z-10 rounded-full bg-white/90 p-2 text-gray-500 shadow-sm hover:bg-white hover:text-red-500 transition-colors"
+          aria-label={activeFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+        >
+          <Heart
+            size={18}
+            className={`${activeFavorite ? 'fill-current text-red-500' : 'text-gray-500'}`}
+          />
+        </button>
         <div className="absolute top-2 left-2">
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getCategoryColor(product.category)}`}>
             {getCategoryLabel(product.category)}
