@@ -13,6 +13,7 @@ import {
   LogOut,
   LogIn,
   UserPlus,
+  Store,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
@@ -130,170 +131,147 @@ export function ProductCatalog() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6">
-        <aside className="hidden lg:flex flex-col w-72 rounded-3xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-5 py-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Menu</p>
-            <h2 className="mt-3 text-lg font-semibold text-gray-900">Navegação</h2>
-            <p className="mt-2 text-sm text-gray-500">Use o painel para buscar, filtrar e explorar categorias.</p>
+        <aside className="hidden lg:flex w-72 bg-white border border-gray-200 rounded-3xl flex-col flex-shrink-0 overflow-hidden">
+          <div className="p-5 border-b border-gray-100">
+            <span className="font-display font-bold text-gray-800 text-sm">Cartas & Capítulos</span>
+            <p className="text-xs text-gray-400 mt-0.5">Painel de navegação</p>
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="mt-3 flex items-center gap-1.5 text-xs text-brand-green-dark hover:underline"
+            >
+              <Store size={12} />
+              Ver loja
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold text-gray-700">Conta</p>
-              {authLoading ? (
-                <div className="space-y-2">
-                  <div className="h-10 rounded-3xl bg-gray-100 animate-pulse" />
-                  <div className="h-10 rounded-3xl bg-gray-100 animate-pulse" />
-                </div>
-              ) : user ? (
-                <div className="grid gap-2">
+          <nav className="flex flex-col gap-1.5 p-3">
+            {authLoading ? (
+              <>
+                <div className="h-10 rounded-2xl bg-gray-100 animate-pulse" />
+                <div className="h-10 rounded-2xl bg-gray-100 animate-pulse" />
+              </>
+            ) : user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => router.push('/cliente/conta')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
+                >
+                  <User size={16} />
+                  Minha conta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/cliente/favoritos')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
+                >
+                  <Heart size={16} />
+                  Favoritos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/cliente/pedidos')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
+                >
+                  <ShoppingBag size={16} />
+                  Meus pedidos
+                </button>
+                {profile?.is_admin && (
                   <button
                     type="button"
-                    onClick={() => router.push('/cliente/conta')}
-                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                    onClick={() => router.push('/admin')}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                   >
-                    <div className="flex items-center gap-2">
-                      <User size={16} /> Minha conta
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cliente/favoritos')}
-                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Heart size={16} /> Favoritos
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cliente/pedidos')}
-                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex items-center gap-2">
-                      <ShoppingBag size={16} /> Meus pedidos
-                    </div>
-                  </button>
-                  {profile?.is_admin && (
-                    <button
-                      type="button"
-                      onClick={() => router.push('/admin')}
-                      className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                    >
-                      <div className="flex items-center gap-2">
-                        <LayoutDashboard size={16} /> Admin
-                      </div>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={signOut}
-                    className="w-full rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-medium text-red-700 hover:bg-red-100 transition"
-                  >
-                    <div className="flex items-center gap-2">
-                      <LogOut size={16} /> Sair
-                    </div>
-                  </button>
-                </div>
-              ) : (
-                <div className="grid gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push('/login')}
-                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex items-center gap-2">
-                      <LogIn size={16} /> Entrar
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/cadastro')}
-                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex items-center gap-2">
-                      <UserPlus size={16} /> Criar conta
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-700">Categorias</p>
-                {categoryFilter && (
-                  <button
-                    type="button"
-                    onClick={() => setCategoryFilter('')}
-                    className="text-xs font-medium text-brand-green hover:text-brand-green-dark"
-                  >
-                    Limpar
+                    <LayoutDashboard size={16} />
+                    Admin
                   </button>
                 )}
-              </div>
-              <div className="space-y-2">
-                {categoriesWithThemes.map((item) => {
-                  const isActiveCategory = categoryFilter === item.category
-                  return (
-                    <div key={item.category} className="rounded-3xl border border-gray-100 bg-white overflow-hidden">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
-                          setExpandedSidebarCategory(nextExpanded)
-                          setCategoryFilter(item.category)
-                          if (!isActiveCategory) setThemeFilter('')
-                        }}
-                        className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm transition ${
-                          isActiveCategory
-                            ? 'bg-brand-green/20 text-gray-900 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <Folder size={16} />
-                          {item.category}
-                        </span>
-                        <ChevronDown
-                          className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
-                          size={16}
-                        />
-                      </button>
-                      {expandedSidebarCategory === item.category && item.themes.length > 0 && (
-                        <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
-                          {item.themes.map((theme) => (
-                            <button
-                              key={theme}
-                              type="button"
-                              onClick={() => {
-                                setCategoryFilter(item.category)
-                                setThemeFilter(theme)
-                              }}
-                              className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
-                                themeFilter === theme
-                                  ? 'bg-brand-green/15 text-gray-900 font-medium'
-                                  : 'text-gray-700 hover:bg-white hover:text-gray-900'
-                              }`}
-                            >
-                              {theme}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+                <button
+                  type="button"
+                  onClick={signOut}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut size={16} />
+                  Sair
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => router.push('/login')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
+                >
+                  <LogIn size={16} />
+                  Entrar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/cadastro')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
+                >
+                  <UserPlus size={16} />
+                  Criar conta
+                </button>
+              </>
+            )}
+          </nav>
 
-          </div>
-
-          <div className="border-t border-gray-100 px-5 py-4">
-            <div className="grid gap-2 text-sm text-gray-500">
-              <span className="rounded-full bg-gray-100 px-3 py-2">Itens: {loading ? '...' : filteredProducts.length}</span>
-              <span className="rounded-full bg-gray-100 px-3 py-2">Categorias: {categoryOptions.length}</span>
-              <span className="rounded-full bg-gray-100 px-3 py-2">Subcategorias: {themeOptions.length}</span>
+          <div className="p-3 border-t border-gray-100">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 mb-3">Categorias</p>
+            <div className="space-y-1">
+              {categoriesWithThemes.map((item) => {
+                const isActiveCategory = categoryFilter === item.category
+                return (
+                  <div key={item.category} className="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                        setExpandedSidebarCategory(nextExpanded)
+                        setCategoryFilter(item.category)
+                        if (!isActiveCategory) setThemeFilter('')
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition ${
+                        isActiveCategory
+                          ? 'bg-brand-green/30 text-gray-900 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Folder size={16} />
+                        {item.category}
+                      </span>
+                      <ChevronDown
+                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                        size={16}
+                      />
+                    </button>
+                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                        {item.themes.map((theme) => (
+                          <button
+                            key={theme}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilter(item.category)
+                              setThemeFilter(theme)
+                            }}
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                              themeFilter === theme
+                                ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                            }`}
+                          >
+                            {theme}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </aside>
