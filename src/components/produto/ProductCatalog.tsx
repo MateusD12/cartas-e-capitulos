@@ -123,260 +123,331 @@ export function ProductCatalog() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6">
+      <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6">
         <aside className="hidden lg:flex flex-col w-72 rounded-3xl border border-gray-200 bg-white shadow-sm">
           <div className="border-b border-gray-100 px-5 py-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
-            <h2 className="mt-3 text-lg font-semibold text-gray-900">Filtrar produtos</h2>
-            <p className="mt-2 text-sm text-gray-500">Selecione categoria ou subcategoria.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Menu</p>
+            <h2 className="mt-3 text-lg font-semibold text-gray-900">Navegação</h2>
+            <p className="mt-2 text-sm text-gray-500">Use o painel para buscar, filtrar e explorar categorias.</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-3 py-4">
-            <nav className="space-y-2">
-              {categoriesWithThemes.map((item) => {
-                const isActiveCategory = categoryFilter === item.category
-                return (
-                  <div key={item.category} className="rounded-3xl border border-gray-100 bg-white overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
-                        setExpandedSidebarCategory(nextExpanded)
-                        setCategoryFilter(item.category)
-                        if (!isActiveCategory) setThemeFilter('')
-                      }}
-                      className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm transition ${
-                        isActiveCategory
-                          ? 'bg-brand-green/20 text-gray-900 font-medium'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Folder size={16} />
-                        {item.category}
-                      </span>
-                      <ChevronDown
-                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
-                        size={16}
-                      />
-                    </button>
-                    {expandedSidebarCategory === item.category && item.themes.length > 0 && (
-                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
-                        {item.themes.map((theme) => (
-                          <button
-                            key={theme}
-                            type="button"
-                            onClick={() => {
-                              setCategoryFilter(item.category)
-                              setThemeFilter(theme)
-                            }}
-                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
-                              themeFilter === theme
-                                ? 'bg-brand-green/15 text-gray-900 font-medium'
-                                : 'text-gray-700 hover:bg-white hover:text-gray-900'
-                            }`}
-                          >
-                            {theme}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+          <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-600">Buscar</label>
+              <div className="relative">
+                <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Buscar por nome, tema ou palavra-chave"
+                  className="w-full rounded-3xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-700 outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-gray-700">Categorias</p>
+                {categoryFilter && (
+                  <button
+                    type="button"
+                    onClick={() => setCategoryFilter('')}
+                    className="text-xs font-medium text-brand-green hover:text-brand-green-dark"
+                  >
+                    Limpar
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {categoriesWithThemes.map((item) => {
+                  const isActiveCategory = categoryFilter === item.category
+                  return (
+                    <div key={item.category} className="rounded-3xl border border-gray-100 bg-white overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                          setExpandedSidebarCategory(nextExpanded)
+                          setCategoryFilter(item.category)
+                          if (!isActiveCategory) setThemeFilter('')
+                        }}
+                        className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm transition ${
+                          isActiveCategory
+                            ? 'bg-brand-green/20 text-gray-900 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Folder size={16} />
+                          {item.category}
+                        </span>
+                        <ChevronDown
+                          className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                          size={16}
+                        />
+                      </button>
+                      {expandedSidebarCategory === item.category && item.themes.length > 0 && (
+                        <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
+                          {item.themes.map((theme) => (
+                            <button
+                              key={theme}
+                              type="button"
+                              onClick={() => {
+                                setCategoryFilter(item.category)
+                                setThemeFilter(theme)
+                              }}
+                              className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                                themeFilter === theme
+                                  ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                  : 'text-gray-700 hover:bg-white hover:text-gray-900'
+                              }`}
+                            >
+                              {theme}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm font-semibold text-gray-700">Ordenar</p>
+              <div className="grid gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSortOption('price-asc')}
+                  className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${
+                    sortOption === 'price-asc'
+                      ? 'border-brand-green bg-brand-green/10 text-gray-900'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowDown size={16} /> Preço: menor → maior
                   </div>
-                )
-              })}
-            </nav>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortOption('price-desc')}
+                  className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${
+                    sortOption === 'price-desc'
+                      ? 'border-brand-green bg-brand-green/10 text-gray-900'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowUp size={16} /> Preço: maior → menor
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortOption('name-asc')}
+                  className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${
+                    sortOption === 'name-asc'
+                      ? 'border-brand-green bg-brand-green/10 text-gray-900'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowUp size={16} /> A → Z
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortOption('name-desc')}
+                  className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${
+                    sortOption === 'name-desc'
+                      ? 'border-brand-green bg-brand-green/10 text-gray-900'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowDown size={16} /> Z → A
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="border-t border-gray-100 px-5 py-4">
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-            >
-              Limpar filtros
-            </button>
+            <div className="grid gap-2 text-sm text-gray-500">
+              <span className="rounded-full bg-gray-100 px-3 py-2">Itens: {loading ? '...' : filteredProducts.length}</span>
+              <span className="rounded-full bg-gray-100 px-3 py-2">Categorias: {categoryOptions.length}</span>
+              <span className="rounded-full bg-gray-100 px-3 py-2">Subcategorias: {themeOptions.length}</span>
+            </div>
           </div>
         </aside>
 
         <div>
           <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm">
-          <div className="hidden lg:flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
-              <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-                Encontre seu produto por nome, tema ou categoria
-              </h1>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
+                <h1 className="mt-2 text-3xl font-display font-bold text-gray-900">Produtos disponíveis</h1>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+
+            <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto]">
+              <label className="relative block md:hidden">
+                <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Buscar por nome, tema ou palavra-chave"
+                  className="w-full rounded-3xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-700 outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
+                />
+              </label>
               <button
                 type="button"
                 onClick={() => setFilterOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-brand-green text-gray-900 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-brand-green-dark transition"
+                className="inline-flex items-center justify-center rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition md:hidden"
               >
-                <Funnel size={16} /> Filtros
+                <Funnel size={18} className="mr-2 text-gray-500" /> Filtros
               </button>
             </div>
-          </div>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
-          <label className="relative block">
-            <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por nome, tema ou palavra-chave"
-              className="w-full rounded-3xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-700 outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
-            />
-          </label>
-          <button
-            type="button"
-            onClick={() => setFilterOpen(true)}
-            className="inline-flex items-center justify-center rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-          >
-            <Funnel size={18} className="mr-2 text-gray-500" /> Ajustar filtros
-          </button>
-        </div>
-
-        {(search || categoryFilter || themeFilter || sortOption !== 'price-asc') && (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {search && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Busca: {search}</span>}
-            {categoryFilter && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Categoria: {getCategoryLabel(categoryFilter)}</span>}
-            {themeFilter && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Subcategoria: {themeFilter}</span>}
-            {sortOption !== 'price-asc' && (
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
-                Ordenar: {sortOption === 'price-desc' ? 'Preço maior → menor' : sortOption === 'name-asc' ? 'A → Z' : 'Z → A'}
-              </span>
+            {(search || categoryFilter || themeFilter || sortOption !== 'price-asc') && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {search && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Busca: {search}</span>}
+                {categoryFilter && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Categoria: {getCategoryLabel(categoryFilter)}</span>}
+                {themeFilter && <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">Subcategoria: {themeFilter}</span>}
+                {sortOption !== 'price-asc' && (
+                  <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
+                    Ordenar: {sortOption === 'price-desc' ? 'Preço maior → menor' : sortOption === 'name-asc' ? 'A → Z' : 'Z → A'}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="rounded-full bg-white px-3 py-1 text-sm text-brand-green border border-brand-green hover:bg-brand-green/10 transition"
+                >
+                  Limpar filtros
+                </button>
+              </div>
             )}
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="rounded-full bg-white px-3 py-1 text-sm text-brand-green border border-brand-green hover:bg-brand-green/10 transition"
-            >
-              Limpar filtros
-            </button>
           </div>
-        )}
-      </div>
 
-      <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
-          <p className="text-sm text-gray-500">Produtos disponíveis</p>
-          <p className="text-xl font-semibold text-gray-900">{loading ? 'Carregando...' : `${filteredProducts.length} item${filteredProducts.length === 1 ? '' : 's'}`}</p>
-        </div>
-        <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
-          <span className="rounded-3xl border border-gray-200 bg-white px-3 py-2">Categorias: {categoryOptions.length}</span>
-          <span className="rounded-3xl border border-gray-200 bg-white px-3 py-2">Subcategorias: {themeOptions.length}</span>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        {loading ? <SkeletonGrid /> : <ProductGrid products={filteredProducts} />}
-      </div>
-
-      {filterOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl font-bold text-gray-900">Filtros do catálogo</h2>
-                <p className="text-sm text-gray-500">Escolha categoria, subcategoria e ordem de exibição.</p>
-              </div>
-              <button onClick={() => setFilterOpen(false)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 transition">
-                <X size={18} />
-              </button>
+          <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Produtos disponíveis</p>
+              <p className="text-xl font-semibold text-gray-900">{loading ? 'Carregando...' : `${filteredProducts.length} item${filteredProducts.length === 1 ? '' : 's'}`}</p>
             </div>
+            <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+              <span className="rounded-3xl border border-gray-200 bg-white px-3 py-2">Categorias: {categoryOptions.length}</span>
+              <span className="rounded-3xl border border-gray-200 bg-white px-3 py-2">Subcategorias: {themeOptions.length}</span>
+            </div>
+          </div>
 
-            <div className="mt-6 grid gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Categoria</label>
-                <select
-                  value={categoryFilter}
-                  onChange={(event) => setCategoryFilter(event.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
-                >
-                  <option value="">Todas</option>
-                  {categoryOptions.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Subcategoria</label>
-                <select
-                  value={themeFilter}
-                  onChange={(event) => setThemeFilter(event.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
-                >
-                  <option value="">Todas</option>
-                  {themeOptions.map((theme) => (
-                    <option key={theme} value={theme}>{theme}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Ordenar</label>
-                <div className="mt-2 grid gap-2 md:grid-cols-2">
+          <div className="mt-6">
+            {loading ? <SkeletonGrid /> : <ProductGrid products={filteredProducts} />}
+          </div>
+
+          {filterOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+              <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="font-display text-xl font-bold text-gray-900">Filtros do catálogo</h2>
+                    <p className="text-sm text-gray-500">Escolha categoria, subcategoria e ordem de exibição.</p>
+                  </div>
+                  <button onClick={() => setFilterOpen(false)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 transition">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="mt-6 grid gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Categoria</label>
+                    <select
+                      value={categoryFilter}
+                      onChange={(event) => setCategoryFilter(event.target.value)}
+                      className="mt-2 w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
+                    >
+                      <option value="">Todas</option>
+                      {categoryOptions.map((category) => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Subcategoria</label>
+                    <select
+                      value={themeFilter}
+                      onChange={(event) => setThemeFilter(event.target.value)}
+                      className="mt-2 w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20"
+                    >
+                      <option value="">Todas</option>
+                      {themeOptions.map((theme) => (
+                        <option key={theme} value={theme}>{theme}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Ordenar</label>
+                    <div className="mt-2 grid gap-2 md:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={() => setSortOption('price-asc')}
+                        className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'price-asc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <ArrowDown size={16} /> Preço: menor → maior
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSortOption('price-desc')}
+                        className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'price-desc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <ArrowUp size={16} /> Preço: maior → menor
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSortOption('name-asc')}
+                        className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'name-asc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <ArrowUp size={16} /> A → Z
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSortOption('name-desc')}
+                        className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'name-desc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <ArrowDown size={16} /> Z → A
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
                   <button
                     type="button"
-                    onClick={() => setSortOption('price-asc')}
-                    className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'price-asc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                    onClick={() => { setFilterOpen(false); clearFilters() }}
+                    className="rounded-3xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
                   >
-                    <div className="flex items-center gap-2">
-                      <ArrowDown size={16} /> Preço: menor → maior
-                    </div>
+                    Limpar tudo
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSortOption('price-desc')}
-                    className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'price-desc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
+                    onClick={() => setFilterOpen(false)}
+                    className="rounded-3xl bg-brand-green px-5 py-3 text-sm font-semibold text-gray-900 transition hover:bg-brand-green-dark"
                   >
-                    <div className="flex items-center gap-2">
-                      <ArrowUp size={16} /> Preço: maior → menor
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSortOption('name-asc')}
-                    className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'name-asc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ArrowUp size={16} /> A → Z
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSortOption('name-desc')}
-                    className={`rounded-3xl border px-4 py-3 text-left text-sm transition ${sortOption === 'name-desc' ? 'border-brand-green bg-brand-green/10 text-gray-900' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ArrowDown size={16} /> Z → A
-                    </div>
+                    Aplicar filtros
                   </button>
                 </div>
               </div>
             </div>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => { setFilterOpen(false); clearFilters() }}
-                className="rounded-3xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-              >
-                Limpar tudo
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterOpen(false)}
-                className="rounded-3xl bg-brand-green px-5 py-3 text-sm font-semibold text-gray-900 transition hover:bg-brand-green-dark"
-              >
-                Aplicar filtros
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
-
-      </div>
       </div>
     </div>
   )
