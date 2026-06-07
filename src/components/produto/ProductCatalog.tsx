@@ -153,67 +153,60 @@ export function ProductCatalog() {
               </>
             ) : user ? (
               <>
-                <button
-                  type="button"
-                  onClick={() => router.push('/cliente/conta')}
+                <a
+                  href="/cliente/conta"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                 >
                   <User size={16} />
                   Minha conta
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.push('/cliente/favoritos')}
+                </a>
+                <a
+                  href="/cliente/favoritos"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                 >
                   <Heart size={16} />
                   Favoritos
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.push('/cliente/pedidos')}
+                </a>
+                <a
+                  href="/cliente/pedidos"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                 >
                   <ShoppingBag size={16} />
                   Meus pedidos
-                </button>
+                </a>
                 {profile?.is_admin && (
-                  <button
-                    type="button"
-                    onClick={() => router.push('/admin')}
+                  <a
+                    href="/admin"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                   >
                     <LayoutDashboard size={16} />
                     Admin
-                  </button>
+                  </a>
                 )}
-                <button
-                  type="button"
-                  onClick={signOut}
+                <a
+                  href="/api/auth/signout"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
                 >
                   <LogOut size={16} />
                   Sair
-                </button>
+                </a>
               </>
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={() => router.push('/login')}
+                <a
+                  href="/login"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                 >
                   <LogIn size={16} />
                   Entrar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.push('/cadastro')}
+                </a>
+                <a
+                  href="/cadastro"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-brand-green/15 hover:text-gray-900 transition-colors"
                 >
                   <UserPlus size={16} />
                   Criar conta
-                </button>
+                </a>
               </>
             )}
           </nav>
