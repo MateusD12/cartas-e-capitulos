@@ -124,44 +124,44 @@ export function ProductCatalog() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6">
-        <aside className="hidden lg:block rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="space-y-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Navegação</p>
-              <div className="mt-3 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                >
-                  Início
-                </button>
-              </div>
-            </div>
+        <aside className="hidden lg:flex flex-col w-72 rounded-3xl border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-100 px-5 py-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Catálogo</p>
+            <h2 className="mt-3 text-lg font-semibold text-gray-900">Filtrar produtos</h2>
+            <p className="mt-2 text-sm text-gray-500">Selecione categoria ou subcategoria.</p>
+          </div>
 
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Categorias</p>
-              <div className="mt-3 space-y-3">
-                {categoriesWithThemes.map((item) => (
-                  <div key={item.category} className="rounded-3xl border border-gray-100 bg-gray-50">
+          <div className="flex-1 overflow-y-auto px-3 py-4">
+            <nav className="space-y-2">
+              {categoriesWithThemes.map((item) => {
+                const isActiveCategory = categoryFilter === item.category
+                return (
+                  <div key={item.category} className="rounded-3xl border border-gray-100 bg-white overflow-hidden">
                     <button
                       type="button"
-                      onClick={() => setExpandedSidebarCategory((current) => (current === item.category ? null : item.category))}
-                      onDoubleClick={() => {
+                      onClick={() => {
+                        const nextExpanded = expandedSidebarCategory === item.category ? null : item.category
+                        setExpandedSidebarCategory(nextExpanded)
                         setCategoryFilter(item.category)
-                        setThemeFilter('')
+                        if (!isActiveCategory) setThemeFilter('')
                       }}
-                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+                      className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm transition ${
+                        isActiveCategory
+                          ? 'bg-brand-green/20 text-gray-900 font-medium'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
                     >
                       <span className="flex items-center gap-2">
                         <Folder size={16} />
                         {item.category}
                       </span>
-                      <ChevronDown className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180' : ''}`} size={16} />
+                      <ChevronDown
+                        className={`transition ${expandedSidebarCategory === item.category ? 'rotate-180 text-gray-900' : 'text-gray-400'}`}
+                        size={16}
+                      />
                     </button>
                     {expandedSidebarCategory === item.category && item.themes.length > 0 && (
-                      <div className="space-y-1 border-t border-gray-100 px-3 py-2">
-                        <p className="text-[11px] text-gray-400 mb-2">Clique para expandir. Duplo clique para filtrar.</p>
+                      <div className="border-t border-gray-100 bg-gray-50 px-3 py-3 space-y-2">
                         {item.themes.map((theme) => (
                           <button
                             key={theme}
@@ -170,7 +170,11 @@ export function ProductCatalog() {
                               setCategoryFilter(item.category)
                               setThemeFilter(theme)
                             }}
-                            className="w-full rounded-2xl px-3 py-2 text-left text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition"
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${
+                              themeFilter === theme
+                                ? 'bg-brand-green/15 text-gray-900 font-medium'
+                                : 'text-gray-700 hover:bg-white hover:text-gray-900'
+                            }`}
                           >
                             {theme}
                           </button>
@@ -178,14 +182,19 @@ export function ProductCatalog() {
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            </div>
+                )
+              })}
+            </nav>
+          </div>
 
-            <div className="rounded-3xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-600">
-              <p className="font-semibold text-gray-900 mb-2">Dica</p>
-              Use o painel lateral para navegar pelas categorias e subcategorias do catálogo sem precisar do menu superior.
-            </div>
+          <div className="border-t border-gray-100 px-5 py-4">
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+            >
+              Limpar filtros
+            </button>
           </div>
         </aside>
 
